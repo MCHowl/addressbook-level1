@@ -117,6 +117,8 @@ public class AddressBook {
     private static final String COMMAND_LIST_WORD = "list";
     private static final String COMMAND_LIST_DESC = "Displays all persons as a list with index numbers.";
     private static final String COMMAND_LIST_EXAMPLE = COMMAND_LIST_WORD;
+    
+    private static final String COMMAND_SORT_WORD = "sort";
 
     private static final String COMMAND_DELETE_WORD = "delete";
     private static final String COMMAND_DELETE_DESC = "Deletes a person identified by the index number used in "
@@ -214,20 +216,14 @@ public class AddressBook {
         showWelcomeMessage();
         
         //processProgramArgs(args);
-        
         if (args.length >= 2) {
             showToUser(MESSAGE_INVALID_PROGRAM_ARGS);
             exitProgram();
-        }
-
-        if (args.length == 1) {
+        } else if (args.length == 1) {
             setupGivenFileForStorage(args[0]);
-        }
-
-        if(args.length == 0) {
+        } else {
             setupDefaultFileForStorage();
         }
-        
         
         loadDataFromStorage();
         while (true) {
@@ -282,6 +278,8 @@ public class AddressBook {
      *
      * @param args full program arguments passed to application main method
      */
+    
+    /*
     private static void processProgramArgs(String[] args) {
         if (args.length >= 2) {
             showToUser(MESSAGE_INVALID_PROGRAM_ARGS);
@@ -296,6 +294,7 @@ public class AddressBook {
             setupDefaultFileForStorage();
         }
     }
+    */
 
     /**
      * Sets up the storage file based on the supplied file path.
@@ -374,6 +373,8 @@ public class AddressBook {
         case COMMAND_LIST_WORD:
             return executeListAllPersonsInAddressBook();
         case COMMAND_EDIT_WORD:
+            return executeListAllPersonsInSortedAddressBook();
+        case COMMAND_SORT_WORD:
         	return executeEditPerson(commandArgs);
         case COMMAND_DELETE_WORD:
             return executeDeletePerson(commandArgs);
@@ -498,7 +499,7 @@ public class AddressBook {
     }
     
     /**
-     * 
+     * TODO acutally make it edit
      */
     private static String executeEditPerson(String commandArgs){
         // try decoding a person from the raw args
@@ -596,6 +597,18 @@ public class AddressBook {
      * @return feedback display message for the operation result
      */
     private static String executeListAllPersonsInAddressBook() {
+        ArrayList<HashMap<PersonProperty, String>> toBeDisplayed = getAllPersonsInAddressBook();
+        showToUser(toBeDisplayed);
+        return getMessageForPersonsDisplayedSummary(toBeDisplayed);
+    }
+    
+    /**
+     * Displays all persons in the address book to the user; in added order.
+     *
+     * @return feedback display message for the operation result
+     */
+    private static String executeListAllPersonsInSortedAddressBook() {
+    	//TODO acutally make it sort
         ArrayList<HashMap<PersonProperty, String>> toBeDisplayed = getAllPersonsInAddressBook();
         showToUser(toBeDisplayed);
         return getMessageForPersonsDisplayedSummary(toBeDisplayed);
@@ -778,7 +791,7 @@ public class AddressBook {
     private static ArrayList<String> getLinesInFile(String filePath) {
         ArrayList<String> lines = null;
         try {
-            lines = new ArrayList(Files.readAllLines(Paths.get(filePath)));
+            lines = new ArrayList<String>(Files.readAllLines(Paths.get(filePath)));
         } catch (FileNotFoundException fnfe) {
             showToUser(String.format(MESSAGE_ERROR_MISSING_STORAGE_FILE, filePath));
             exitProgram();
@@ -828,10 +841,13 @@ public class AddressBook {
      *
      * @param index absolute index of person to delete (index within {@link #ALL_PERSONS})
      */
+    
+    /*
     private static void deletePersonFromAddressBook(int index) {
         ALL_PERSONS.remove(index);
         savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
     }
+    */
 
     /**
      * Deletes the specified person from the addressbook if it is inside. Saves any changes to storage file.
@@ -1248,7 +1264,7 @@ public class AddressBook {
      * @return split by whitespace
      */
     private static ArrayList<String> splitByWhitespace(String toSplit) {
-        return new ArrayList(Arrays.asList(toSplit.trim().split("\\s+")));
+        return new ArrayList<String>(Arrays.asList(toSplit.trim().split("\\s+")));
     }
     
     /**
